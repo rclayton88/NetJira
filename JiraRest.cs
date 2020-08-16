@@ -13,9 +13,10 @@ namespace NetJira
     /// </summary>
     public abstract class JiraRest
     {
-        private OAuth1RsaSha1HttpMessageHandler jiraConsumer = new OAuth1RsaSha1HttpMessageHandler();
-        private readonly string baseUrl;
-        public JiraRest(string baseUrl,
+        private readonly OAuth1RsaSha1HttpMessageHandler _jiraConsumer = new OAuth1RsaSha1HttpMessageHandler();
+        private readonly string _baseUrl;
+
+        protected JiraRest(string baseUrl,
             string accessToken,
             string accessTokenSecret,
             string consumerKey,
@@ -24,12 +25,12 @@ namespace NetJira
         {
             ServicePointManager.Expect100Continue = true;
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-            this.baseUrl = baseUrl;
-            jiraConsumer.AccessToken = accessToken;
-            jiraConsumer.AccessTokenSecret = accessTokenSecret;
-            jiraConsumer.ConsumerKey = consumerKey;
-            jiraConsumer.SigningCertificate = new X509Certificate2(pathToSigningCertificate, signingCertificatePassword);
-            jiraConsumer.Location = OAuth1HttpMessageHandlerBase.OAuthParametersLocation.AuthorizationHttpHeader;
+            _baseUrl = baseUrl;
+            _jiraConsumer.AccessToken = accessToken;
+            _jiraConsumer.AccessTokenSecret = accessTokenSecret;
+            _jiraConsumer.ConsumerKey = consumerKey;
+            _jiraConsumer.SigningCertificate = new X509Certificate2(pathToSigningCertificate, signingCertificatePassword);
+            _jiraConsumer.Location = OAuth1HttpMessageHandlerBase.OAuthParametersLocation.AuthorizationHttpHeader;
         }
 
         /// <summary>
@@ -39,12 +40,12 @@ namespace NetJira
         /// <returns>Status code and content body. 500 response if an exception occurred client-sie and the error message.</returns>
         public Tuple<HttpStatusCode, string> Get(string restEndPoint)
         {
-            return makeRequest(HttpMethod.Get, restEndPoint);
+            return MakeRequest(HttpMethod.Get, restEndPoint);
         }
 
         public Tuple<HttpStatusCode, string> Post(string restEndPoint, string postMessage)
         {
-            return makeRequest(HttpMethod.Post, restEndPoint, postMessage);
+            return MakeRequest(HttpMethod.Post, restEndPoint, postMessage);
         }
 
         public Tuple<HttpStatusCode, string> MakeIssue(string restEndPoint)
@@ -52,12 +53,12 @@ namespace NetJira
             throw new NotImplementedException();
         }
 
-        private Tuple<HttpStatusCode, string> makeRequest(HttpMethod httpMethod, 
+        private Tuple<HttpStatusCode, string> MakeRequest(HttpMethod httpMethod, 
             string restEndPoint, 
             string contentBody = null)
         {
-            var jiraRequest = new HttpRequestMessage(httpMethod, this.baseUrl + restEndPoint);
-            jiraConsumer.ApplyAuthorization(jiraRequest);
+            var jiraRequest = new HttpRequestMessage(httpMethod, this._baseUrl + restEndPoint);
+            _jiraConsumer.ApplyAuthorization(jiraRequest);
             if (contentBody != null) 
             { 
                 jiraRequest.Content = new StringContent(contentBody, Encoding.UTF8, "application/json");

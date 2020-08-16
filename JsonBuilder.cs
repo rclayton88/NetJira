@@ -19,13 +19,13 @@ namespace NetJira
         {
             if (values == null)
             {
-                return string.Format("\"customfield_{0}\": null", customFieldId);
+                return $"\"customfield_{customFieldId}\": null";
             }
 
             // Example: "customfield_10008": [ {"value": "red" }, {"value": "blue" }, {"value": "green" }]
             customFieldId = customFieldId ?? "";
             var value = string.Join(",", values.Select(v => string.Format("{{\"value\":\"{0}\"}}", EscapeCharacters(v))));
-            return string.Format("\"customfield_{0}\": [{1}]", customFieldId.Trim(), value);
+            return $"\"customfield_{customFieldId.Trim()}\": [{value}]";
         }
 
         /// <summary>
@@ -39,31 +39,31 @@ namespace NetJira
             // Example: "customfield_10008": [ {"value": "red" }, {"value": "blue" }, {"value": "green" }]
             if (value == null)
             {
-                return string.Format("\"customfield_{0}\": null", customFieldId);
+                return $"\"customfield_{customFieldId}\": null";
             }
             customFieldId = customFieldId ?? "";
             var formattedValue = string.Format("{{\"value\":\"{0}\"}}", EscapeCharacters(value));
-            return string.Format("\"customfield_{0}\": {1}", customFieldId.Trim(), formattedValue);
+            return $"\"customfield_{customFieldId.Trim()}\": {formattedValue}";
         }
 
         public static string SetProjectKey(string projectKey)
         {
-            return string.Format("\"project\":{{\"key\":\"{0}\"}}", projectKey);
+            return $"\"project\":{{\"key\":\"{projectKey}\"}}";
         }
 
         public static string SetIssueType(string issueType)
         {
-            return string.Format("\"issuetype\": {{\"name\":\"{0}\"}}", issueType);
+            return $"\"issuetype\": {{\"name\":\"{issueType}\"}}";
         }
 
         public static string SetKeyValue(string key, string value)
         {
-            return string.Format("\"{0}\":\"{1}\"", key, EscapeCharacters(value));
+            return $"\"{key}\":\"{EscapeCharacters(value)}\"";
         }
 
         public static string SetPriorityById(int priorityId)
         {
-            return string.Format("\"priority\":{{\"id\":\"{0}\"}}", priorityId);
+            return $"\"priority\":{{\"id\":\"{priorityId}\"}}";
         }
 
         private static string EscapeCharacters(string str)
